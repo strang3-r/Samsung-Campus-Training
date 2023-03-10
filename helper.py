@@ -5,7 +5,12 @@
 
 
 import logging
+import logging.conf
 
+logging.config.fileConfig('logging.conf')
+
+logger = logging.getLogger('simpleExample')
+logger.debug('this is debug message')
 
 # In[4]:
 
