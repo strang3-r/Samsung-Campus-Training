@@ -50,5 +50,8 @@ def UserEncoder(JSONEncoder):
         else:
             return JSONEncoder.default(self, o)
 
-userJSON = json.dumps(user, default=encode_user)
+# userJSON = json.dumps(user, default=encode_user)
+# print(userJSON)
+
+userJSON = UserEncoder(JSONEncoder).encode(user)
 print(userJSON)
