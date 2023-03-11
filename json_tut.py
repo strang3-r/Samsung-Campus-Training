@@ -1,5 +1,4 @@
 import json
-from json import JSONEncoder
 
 person = {"name": "John", "age": 30, "city": "New York", "hasChildren": False, "title": ["engineer", "programmer"]}
 
@@ -34,12 +33,14 @@ def encode_user(o):
             'age': o.age,
             o.__class__.__name__: True
         }
-    else:
-        raise TypeError(f'Object of type {o.__class__.__name__} is not JSON serializable')
+    return JSONEncoder(self, o)
     
+userJSON = json.dumps(user, default=encode_user)
+print(userJSON)
+
+from json import JSONEncoder
     
 def UserEncoder(JSONEncoder):
-    
     def default(self, o):
         if isinstance(o, User):
             return {
@@ -47,11 +48,19 @@ def UserEncoder(JSONEncoder):
                 'age': o.age,
                 o.__class__.__name__: True
             }
-        else:
-            return JSONEncoder.default(self, o)
+        return JSONEncoder.default(self, o)
+    
+    
+# Error
 
-# userJSON = json.dumps(user, default=encode_user)
+# userJSON = UserEncoder().encode(user)
 # print(userJSON)
 
-userJSON = UserEncoder(JSONEncoder).encode(user)
-print(userJSON)
+def decode_User(dct):
+    if User.__name__ in dct:
+        return User(name=dct['name'], age=dct['age'])
+    return dct
+
+user = json.loads(userJSON, object_hook=decode_User)
+print(user.name)
+print(type(user))
