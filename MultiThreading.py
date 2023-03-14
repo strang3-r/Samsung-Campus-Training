@@ -38,3 +38,64 @@ if __name__ == "__main__":
     print('end value', database_value)
     
     print("Done!")
+
+
+
+""" --------------------------------- """
+
+from threading import Thread, Lock
+from queue import Queue
+import time
+
+
+if __name__ == "__main__":
+    
+    q = Queue()
+    
+    q.put(1)
+    q.put(2)
+    q.put(3)
+    
+    # 3 2 1 -> 
+    
+    first = q.get()
+    print(first)
+    
+    q.task_done()
+    q.join()
+    
+    
+    print("Done!")
+
+
+""" --------------------------------- """
+
+from threading import Thread, Lock, current_thread
+from queue import Queue
+import time
+
+
+def worker(q, lock):
+    while True:
+        value = q.get()
+        
+        # processing ...
+        with lock:
+            print(f'in {current_thread().name} got {value}')
+            q.task_done()
+
+if __name__ == "__main__":
+    lock = Lock()
+    q = Queue()
+    
+    num_thread = 10
+    for i in range(num_thread):
+        thread = Thread(target=worker, args=(q, lock))
+        thread.daemon = True
+        thread.start()
+    
+    for i in range(1, 21):
+        q.put(i)
+    q.join()
+    
+    print("Done!")
